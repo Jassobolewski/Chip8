@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32002.261
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Chip8", "Chip8\Chip8.vcxproj", "{83A54234-542A-4234-B2D0-858B72487F6C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+		test|x64 = test|x64
+		test|x86 = test|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{83A54234-542A-4234-B2D0-858B72487F6C}.Debug|x64.ActiveCfg = Debug|x64
+		{83A54234-542A-4234-B2D0-858B72487F6C}.Debug|x64.Build.0 = Debug|x64
+		{83A54234-542A-4234-B2D0-858B72487F6C}.Debug|x86.ActiveCfg = Debug|Win32
+		{83A54234-542A-4234-B2D0-858B72487F6C}.Debug|x86.Build.0 = Debug|Win32
+		{83A54234-542A-4234-B2D0-858B72487F6C}.Release|x64.ActiveCfg = Release|x64
+		{83A54234-542A-4234-B2D0-858B72487F6C}.Release|x64.Build.0 = Release|x64
+		{83A54234-542A-4234-B2D0-858B72487F6C}.Release|x86.ActiveCfg = Release|Win32
+		{83A54234-542A-4234-B2D0-858B72487F6C}.Release|x86.Build.0 = Release|Win32
+		{83A54234-542A-4234-B2D0-858B72487F6C}.test|x64.ActiveCfg = test|x64
+		{83A54234-542A-4234-B2D0-858B72487F6C}.test|x86.ActiveCfg = test|Win32
+		{83A54234-542A-4234-B2D0-858B72487F6C}.test|x86.Build.0 = test|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E7C81559-CF4E-4E97-8D35-D5F5691F1715}
+	EndGlobalSection
+EndGlobal
