@@ -3,6 +3,8 @@
 class SDL_Window;
 class SDL_Renderer;
 class SDL_Texture;
+
+//SDL graphic plateform for the emulation
 class Platform
 {
 public:

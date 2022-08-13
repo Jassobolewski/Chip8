@@ -209,6 +209,7 @@ bool Chip8::LoadROM(char const* filename)
 		if (sizeof(buffer) > (sizeof(memory) - START_ADDRESS))
 		{
 			std::cout << "Error: Rom exeeds memory limit" << std::endl;
+			return false;
 		}
 		else
 		{
@@ -229,8 +230,29 @@ bool Chip8::LoadROM(char const* filename)
 
 }
 
+inline unsigned Chip8::OPCODE_MERGER_VX(unsigned opcode)
+{
+	return (opcode & VX) >> 8u;
+}
 
-inline void Chip8::OPCODE_00E0()
+inline unsigned Chip8::OPCODE_MERGER_VY(unsigned opcode)
+{
+	return (opcode & VY) >> 4u;
+}
+
+inline unsigned Chip8::OPCODE_MERGER_BYTE(unsigned opcode)
+{
+	return  (opcode & KK);
+}
+
+
+
+
+//Opcode descriptions from http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#3xkk 
+
+
+
+inline void Chip8::OPCODE_00E0()//clears screen
 {
 	memset(video, 0, sizeof(video));
 }
@@ -256,11 +278,11 @@ inline void Chip8::OPCODE_2nnn()//The interpreter increments the stack pointer, 
 	pc = opcode & NNN;
 }
 
-inline void Chip8::OPCODE_3xkk()
+inline void Chip8::OPCODE_3xkk()//The interpreter compares register Vx to kk, and if they are equal, increments the program counter by 2.
 {
 	//std::cout << "3KKK" << std::endl;
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t byte = opcode & KK;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t byte = OPCODE_MERGER_BYTE(opcode);
 
 	if (registers[Vx] == byte)
 	{
@@ -271,8 +293,8 @@ inline void Chip8::OPCODE_3xkk()
 
 inline void Chip8::OPCODE_4xkk()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t byte = (opcode & KK);
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t byte = OPCODE_MERGER_BYTE(opcode);
 
 	if (registers[Vx] != byte)
 	{
@@ -283,8 +305,8 @@ inline void Chip8::OPCODE_4xkk()
 
 inline void Chip8::OPCODE_5xy0()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t Vy = (opcode & VY) >> 4u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t Vy = OPCODE_MERGER_VY(opcode);
 	if (registers[Vx] == registers[Vy])
 	{
 		pc += 2;
@@ -294,49 +316,49 @@ inline void Chip8::OPCODE_5xy0()
 
 inline void Chip8::OPCODE_6xkk()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 	registers[Vx] = (opcode & KK);
 }
 
 inline void Chip8::OPCODE_7xkk()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t byte = (opcode & KK);
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t byte = OPCODE_MERGER_BYTE(opcode);
 	registers[Vx] += byte;
 }
 
 inline void Chip8::OPCODE_8xy0()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t Vy = (opcode & VY) >> 4u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t Vy = OPCODE_MERGER_VY(opcode);
 	registers[Vx] = registers[Vy];
 }
 
 inline void Chip8::OPCODE_8xy1()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t Vy = (opcode & VY) >> 4u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t Vy = OPCODE_MERGER_VY(opcode);
 	registers[Vx] = (registers[Vx] | registers[Vy]);
 }
 
 inline void Chip8::OPCODE_8xy2()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t Vy = (opcode & VY) >> 4u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t Vy = OPCODE_MERGER_VY(opcode);
 	registers[Vx] = (registers[Vx] & registers[Vy]);
 }
 
 inline void Chip8::OPCODE_8xy3()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t Vy = (opcode & VY) >> 4u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t Vy = OPCODE_MERGER_VY(opcode);
 	registers[Vx] = (registers[Vx] ^ registers[Vy]);
 }
 
 inline void Chip8::OPCODE_8xy4()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t Vy = (opcode & VY) >> 4u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t Vy = OPCODE_MERGER_VY(opcode);
 	auto sum = registers[Vx] + registers[Vy];
 
 	if (sum > 255)
@@ -353,8 +375,8 @@ inline void Chip8::OPCODE_8xy4()
 
 inline void Chip8::OPCODE_8xy5()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t Vy = (opcode & VY) >> 4u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t Vy = OPCODE_MERGER_VY(opcode);
 	auto sum = registers[Vx] + registers[Vy];
 	
 	if (registers[Vx] > registers[Vy])
@@ -371,7 +393,7 @@ inline void Chip8::OPCODE_8xy5()
 
 inline void Chip8::OPCODE_8xy6()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 	registers[VF] = (registers[Vx] & 0x1u);
 
 	registers[Vx] >>= 1;
@@ -380,8 +402,8 @@ inline void Chip8::OPCODE_8xy6()
 
 inline void Chip8::OPCODE_8xy7()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t Vy = (opcode & VY) >> 4u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t Vy = OPCODE_MERGER_VY(opcode);
 
 	if (registers[Vy] > registers[Vx])
 	{
@@ -398,7 +420,7 @@ inline void Chip8::OPCODE_8xy7()
 
 inline void Chip8::OPCODE_8xyE()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 	registers[VF] = (registers[Vx] & 0x80u) >> 7u;
 
 	registers[Vx] <<= 1;
@@ -407,8 +429,8 @@ inline void Chip8::OPCODE_8xyE()
 
 inline void Chip8::OPCODE_9xy0()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t Vy = (opcode & VY) >> 4u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t Vy = OPCODE_MERGER_VY(opcode);
 
 	if (registers[Vx] != registers[Vy])
 	{
@@ -429,15 +451,15 @@ inline void Chip8::OPCODE_Bnnn()
 
 inline void Chip8::OPCODE_Cxkk()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t byte = (opcode & KK);
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t byte = OPCODE_MERGER_BYTE(opcode);
 	registers[Vx] = (uint8_t)(randomByte(randomGenerator) & byte);
 }
 
 void Chip8::OPCODE_Dxyn()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
-	uint8_t Vy = (opcode & VY) >> 4u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
+	uint8_t Vy = OPCODE_MERGER_VY(opcode);
 	uint8_t height = opcode & 0x000Fu;
 
 	// Wrap if going beyond screen boundaries
@@ -474,7 +496,7 @@ void Chip8::OPCODE_Dxyn()
 
 inline void Chip8::OPCODE_Ex9E()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 
 	uint8_t key = registers[Vx];
 
@@ -487,7 +509,7 @@ inline void Chip8::OPCODE_Ex9E()
 
 inline void Chip8::OPCODE_ExA1()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 
 	uint8_t key = registers[Vx];
 
@@ -500,7 +522,7 @@ inline void Chip8::OPCODE_ExA1()
 
 inline void Chip8::OPCODE_Fx07()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 
 	registers[Vx] = delayTimer;
 
@@ -508,7 +530,7 @@ inline void Chip8::OPCODE_Fx07()
 
 void Chip8::OPCODE_Fx0A()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 
 	if (keypad[0])
 	{
@@ -583,7 +605,7 @@ void Chip8::OPCODE_Fx0A()
 
 inline void Chip8::OPCODE_Fx15()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 
 	delayTimer = registers[Vx];
 
@@ -591,7 +613,7 @@ inline void Chip8::OPCODE_Fx15()
 
 inline void Chip8::OPCODE_Fx18()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 
 	soundTimer = registers[Vx];
 
@@ -599,7 +621,7 @@ inline void Chip8::OPCODE_Fx18()
 
 inline void Chip8::OPCODE_Fx1E()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 
 	index += registers[Vx];
 
@@ -608,7 +630,7 @@ inline void Chip8::OPCODE_Fx1E()
 inline void Chip8::OPCODE_Fx29()
 {
 
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 	uint8_t digit = registers[Vx];
 
 	index = FONTSET_START_ADDRESS + (5 * digit);
@@ -617,7 +639,7 @@ inline void Chip8::OPCODE_Fx29()
 
 inline void Chip8::OPCODE_Fx33()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 	uint8_t value = registers[Vx];
 
 	// Ones-place
@@ -631,7 +653,7 @@ inline void Chip8::OPCODE_Fx33()
 
 inline void Chip8::OPCODE_Fx55()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 
 	for (uint8_t i = 0; i <= Vx; ++i)
 	{
@@ -642,7 +664,7 @@ inline void Chip8::OPCODE_Fx55()
 
 inline void Chip8::OPCODE_Fx65()
 {
-	uint8_t Vx = (opcode & VX) >> 8u;
+	uint8_t Vx = OPCODE_MERGER_VX(opcode);
 
 	for (uint8_t i = 0; i <= Vx; ++i)
 	{

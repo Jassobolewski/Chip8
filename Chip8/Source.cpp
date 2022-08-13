@@ -8,6 +8,7 @@
 
 int main(int argc, char** argv)
 {
+	//most code insipried by https://austinmorlan.com/posts/chip8_emulator/ with some changes by me
 	if (argc != 4)
 	{
 		std::cerr << "Usage: " << argv[0] << " <Scale> <Delay> <ROM>\n";
@@ -17,10 +18,10 @@ int main(int argc, char** argv)
 	int videoScale = std::stoi(argv[1]);
 	int cycleDelay = std::stoi(argv[2]);
 	std::string* romFilename = new std::string(argv[3]);
-	std::string* temp = new std::string("Chip 8 - Emulator - Current Rom: ");
-	temp->append(romFilename->c_str());
+	std::string* windowName = new std::string("Chip 8 - Emulator - Current Rom: ");
+	windowName->append(romFilename->c_str());
 
-	Platform platform(temp->c_str(), VIDEO_WIDTH * videoScale, VIDEO_HEIGHT * videoScale, VIDEO_WIDTH, VIDEO_HEIGHT);
+	Platform platform(windowName->c_str(), VIDEO_WIDTH * videoScale, VIDEO_HEIGHT * videoScale, VIDEO_WIDTH, VIDEO_HEIGHT);
 
 	Chip8 chip8;
 	if (chip8.LoadROM(romFilename->c_str()))
@@ -49,6 +50,6 @@ int main(int argc, char** argv)
 	}
 	
 	delete romFilename;
-	delete temp;
+	delete windowName;
 	return 0;
 }

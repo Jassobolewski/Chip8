@@ -2,6 +2,7 @@
 #include "SDL.h"
 #include <crtdbg.h>
 
+//https://austinmorlan.com/posts/chip8_emulator/ most graphics code is sdl boiler plate and inspired from this guide
 Platform::Platform(char const* title, int windowWidth, int windowHeight, int textureWidth, int textureHeight)
 {
 	SDL_Init(SDL_INIT_VIDEO);
