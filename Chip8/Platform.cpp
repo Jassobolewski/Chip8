@@ -1,7 +1,7 @@
 #include "Platform.h"
 #include "SDL.h"
 #include <crtdbg.h>
-#define _CRTDBG_MAP_ALLOC
+
 Platform::Platform(char const* title, int windowWidth, int windowHeight, int textureWidth, int textureHeight)
 {
 	SDL_Init(SDL_INIT_VIDEO);
